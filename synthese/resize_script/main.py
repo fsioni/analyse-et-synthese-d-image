@@ -32,16 +32,16 @@ if __name__ == '__main__':
         print('image not found')
         exit(1)
 
-    antialiasingSize = int(sys.argv[2])
-    if antialiasingSize < 1:
+    antialiasing_size = int(sys.argv[2])
+    if antialiasing_size < 1:
         print('antialiasingSize must be greater than 0')
         exit(1)
 
-    img = resize_image(img, antialiasingSize)
+    img = resize_image(img, antialiasing_size)
     if img is None:
         print('error while resizing the image')
         exit(1)
 
     # ../images/output-before_resize.png should be ../images/output.png
     img_path = img_path.replace('before_resize', '')
-    save_image(img, img_path + '_antialiasing_' + str(antialiasingSize) + '.jpg')
+    save_image(img, img_path + '_antialiasing_' + str(antialiasing_size) + '.jpg')
