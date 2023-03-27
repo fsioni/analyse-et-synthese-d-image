@@ -28,9 +28,19 @@ if __name__ == '__main__':
 
     img_path = sys.argv[1]
     img = load_image(sys.argv[1])
+    if img is None:
+        print('image not found')
+        exit(1)
 
     antialiasingSize = int(sys.argv[2])
+    if antialiasingSize < 1:
+        print('antialiasingSize must be greater than 0')
+        exit(1)
+
     img = resize_image(img, antialiasingSize)
+    if img is None:
+        print('error while resizing the image')
+        exit(1)
 
     # ../images/output-before_resize.png should be ../images/output.png
     img_path = img_path.replace('before_resize', '')
