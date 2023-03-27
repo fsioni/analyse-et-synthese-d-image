@@ -1,16 +1,17 @@
-# This is a sample Python script.
+import cv2
+import numpy as np
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+# Open image.jpeg
+image = cv2.imread('image.jpeg')
+imageGris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+cv2.imshow('img', imageGris)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+while True:
+    key = cv2.waitKey(30) & 0x0FF
+    if key == 27 or key == ord('q'):
+        print('arrêt du programme par l\'utilisateur')
+        break
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+cv2.destroyWindow('img')
