@@ -7,6 +7,7 @@ include_directories(include)
 include_directories(include/gkit)
 
 add_executable(synthese
+        projets/main.cpp
         include/gkit/color.h
         include/gkit/files.h
         include/gkit/image.h
@@ -23,4 +24,25 @@ add_executable(synthese
         src/gkit/image_io.cpp
         src/gkit/mat.cpp
         src/gkit/mesh_io.cpp
-        src/gkit/vec.cpp)
+        src/gkit/vec.cpp include/customs/rendering/Renderer.h
+        src/customs/rendering/Hit.cpp
+        include/customs/rendering/Hit.h
+        src/customs/rendering/Light.cpp
+        include/customs/rendering/Light.h
+        src/customs/rendering/Line.cpp
+        include/customs/rendering/Line.h
+        src/customs/rendering/Renderer.cpp
+        include/customs/rendering/Renderer.h
+        src/customs/scenes/Scene1.cpp
+        include/customs/scenes/Scene1.h
+        src/customs/Utils.cpp
+        include/customs/Utils.h
+        src/customs/drawables/Drawable.cpp
+        include/customs/drawables/Drawable.h
+        src/customs/drawables/Sphere.cpp
+        include/customs/drawables/Sphere.h
+        src/customs/drawables/Plan.cpp
+        include/customs/drawables/Plan.h
+        )
+
+add_subdirectory(lib/Google_tests)
