@@ -1,2 +1,7 @@
 .idea
 .DS_Store
+CMakeFiles
+synthese/CMakeCache.txt
+synthese/cmake_install.cmake
+synthese/Makefile
+synthese/synthese
