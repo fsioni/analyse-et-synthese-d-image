@@ -5,3 +5,5 @@ synthese/CMakeCache.txt
 synthese/cmake_install.cmake
 synthese/Makefile
 synthese/synthese
+*.png
+*.jpg
