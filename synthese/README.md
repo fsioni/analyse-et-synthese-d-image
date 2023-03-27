@@ -1,4 +1,22 @@
-version minimaliste de gkit2light, sans dependances ni openGL.
+# TP noté - Synthèse d'images 2022/2023
 
-consultez la [doc](https://perso.univ-lyon1.fr/jean-claude.iehl/Public/educ/M1IMAGE/html/group__installation.html) en ligne pour la création des projets, cf "étape 3 : générer les projets" ainsi que "étape 5 : créer un nouveau projet". 
+## Dépendances
 
+- Python 3.9+
+- OpenCV 4.7+
+- CMake 3.21+
+
+## How to run
+- In CLion : 
+    - To run the program :
+      - Load CMakeLists.txt
+      - Click on run to launch `synthese`
+    - To run test :
+      - Add a configuration to run `Google_Tests_run`
+
+
+- In terminal :
+    - `mkdir build && cd build`
+    - `cmake ..`
+    - `make`
+    - `./synthese`

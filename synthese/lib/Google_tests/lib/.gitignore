@@ -1,0 +1,84 @@
+# Ignore CI build directory
+build/
+xcuserdata
+cmake-build-debug/
+.idea/
+bazel-bin
+bazel-genfiles
+bazel-googletest
+bazel-out
+bazel-testlogs
+# python
+*.pyc
+
+# Visual Studio files
+.vs
+*.sdf
+*.opensdf
+*.VC.opendb
+*.suo
+*.user
+_ReSharper.Caches/
+Win32-Debug/
+Win32-Release/
+x64-Debug/
+x64-Release/
+
+# Ignore autoconf / automake files
+Makefile.in
+aclocal.m4
+configure
+build-aux/
+autom4te.cache/
+lib/googletest/m4/libtool.m4
+lib/googletest/m4/ltoptions.m4
+lib/googletest/m4/ltsugar.m4
+lib/googletest/m4/ltversion.m4
+lib/googletest/m4/lt~obsolete.m4
+lib/googlemock/m4
+
+# Ignore generated directories.
+lib/googlemock/fused-src/
+lib/googletest/fused-src/
+
+# macOS files
+.DS_Store
+lib/googletest/.DS_Store
+lib/googletest/xcode/.DS_Store
+
+# Ignore cmake generated directories and files.
+CMakeFiles
+CTestTestfile.cmake
+Makefile
+cmake_install.cmake
+lib/googlemock/CMakeFiles
+lib/googlemock/CTestTestfile.cmake
+lib/googlemock/Makefile
+lib/googlemock/cmake_install.cmake
+lib/googlemock/gtest
+/bin
+/lib/googlemock/gmock.dir
+/lib/googlemock/gmock_main.dir
+/lib/googlemock/RUN_TESTS.vcxproj.filters
+/lib/googlemock/RUN_TESTS.vcxproj
+/lib/googlemock/INSTALL.vcxproj.filters
+/lib/googlemock/INSTALL.vcxproj
+/lib/googlemock/gmock_main.vcxproj.filters
+/lib/googlemock/gmock_main.vcxproj
+/lib/googlemock/gmock.vcxproj.filters
+/lib/googlemock/gmock.vcxproj
+/lib/googlemock/gmock.sln
+/lib/googlemock/ALL_BUILD.vcxproj.filters
+/lib/googlemock/ALL_BUILD.vcxproj
+/lib
+/Win32
+/ZERO_CHECK.vcxproj.filters
+/ZERO_CHECK.vcxproj
+/RUN_TESTS.vcxproj.filters
+/RUN_TESTS.vcxproj
+/INSTALL.vcxproj.filters
+/INSTALL.vcxproj
+/googletest-distribution.sln
+/CMakeCache.txt
+/ALL_BUILD.vcxproj.filters
+/ALL_BUILD.vcxproj
