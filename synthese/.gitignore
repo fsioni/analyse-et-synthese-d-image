@@ -1,3 +1,10 @@
 cmake-build-debug
 .idea
 build
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+synthese
+*.png
+*.jpg
