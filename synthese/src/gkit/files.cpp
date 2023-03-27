@@ -9,7 +9,7 @@
 #include <string>
 #include <algorithm>
 
-#include "files.h"
+#include "../../include/gkit/files.h"
 
 
 //! verifie l'existance d'un fichier.

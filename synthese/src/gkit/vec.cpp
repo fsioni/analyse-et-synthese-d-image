@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "vec.h"
+#include "../../include/gkit/vec.h"
 
 
 Point Origin( )

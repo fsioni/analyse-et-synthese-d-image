@@ -4,7 +4,7 @@
 #include <cmath>
 #include <algorithm>
 
-#include "mat.h"
+#include "../../include/gkit/mat.h"
 
 
 float radians( const float deg )

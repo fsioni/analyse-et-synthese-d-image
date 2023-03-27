@@ -3,10 +3,10 @@
 #include <cassert>
 #include <map>
 
-#include "mesh_io.h"
+#include "../../include/gkit/mesh_io.h"
 
-#include "image.h"
-#include "image_io.h"
+#include "../../include/gkit/image.h"
+#include "../../include/gkit/image_io.h"
 
 
 bool read_positions( const char *filename, std::vector<Point>& positions )

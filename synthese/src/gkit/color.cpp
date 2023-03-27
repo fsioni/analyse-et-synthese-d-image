@@ -1,7 +1,7 @@
 
 #include <algorithm>
 
-#include "color.h"
+#include "../../include/gkit/color.h"
 
 
 float Color::power( ) const

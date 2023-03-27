@@ -1,13 +1,13 @@
 
 #include <cfloat>
 
-#include "image.h"
+#include "../../include/gkit/image.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "../../include/gkit/stb_image.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include "../../include/gkit/stb_image_write.h"
 
 
 Color gamma( const Color& color, const float g )
