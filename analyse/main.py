@@ -1,11 +1,6 @@
 import cv2
 import numpy as np
 
-# Open image.jpeg
-imageBase = cv2.imread('image.jpeg')
-imageGray = cv2.cvtColor(imageBase, cv2.COLOR_BGR2GRAY)
-# Flou gaussien pour lisser l'image
-imageBase = cv2.GaussianBlur(imageBase, (5, 5), 0)
 
 # Récupérer la couleur dominante dans une image
 def couleurDominante(image):
@@ -27,6 +22,7 @@ def couleurDominante(image):
     dominant = palette[np.argmax(counts)]
     return dominant
 
+
 # récupérer la liste des pixels de couleur dominante dans une image avec une tolérance
 def listePixelDominants(image, couleur, tolerance, gris=False):
     print('Récupération de la liste des pixels de couleur dominante...')
@@ -36,11 +32,14 @@ def listePixelDominants(image, couleur, tolerance, gris=False):
             pixelColor = image[i][j]
             limiteBase = couleur - tolerance
             limiteHaut = couleur + tolerance
-            condHaut = pixelColor[0] <= limiteHaut[0] and pixelColor[1] <= limiteHaut[1] and pixelColor[2] <= limiteHaut[2]
-            condBase = pixelColor[0] >= limiteBase[0] and pixelColor[1] >= limiteBase[1] and pixelColor[2] >= limiteBase[2]
+            condHaut = pixelColor[0] <= limiteHaut[0] and pixelColor[1] <= limiteHaut[1] and pixelColor[2] <= \
+                       limiteHaut[2]
+            condBase = pixelColor[0] >= limiteBase[0] and pixelColor[1] >= limiteBase[1] and pixelColor[2] >= \
+                       limiteBase[2]
             if condHaut and condBase:
                 liste.append([i, j])
     return liste
+
 
 # remplacer si dans la liste par une couleur sinon par une autre
 def remplacerCouleur(image, liste):
@@ -54,13 +53,13 @@ def remplacerCouleur(image, liste):
 
     # On hardcode le contour en blanc de 5 pixels de large
     image[0:5, 0:image.shape[1]] = [255, 255, 255]
-    image[image.shape[0]-5:image.shape[0], 0:image.shape[1]] = [255, 255, 255]
+    image[image.shape[0] - 5:image.shape[0], 0:image.shape[1]] = [255, 255, 255]
     image[0:image.shape[0], 0:5] = [255, 255, 255]
-    image[0:image.shape[0], image.shape[1]-5:image.shape[1]] = [255, 255, 255]
-
+    image[0:image.shape[0], image.shape[1] - 5:image.shape[1]] = [255, 255, 255]
 
     print('Image créée')
     return image
+
 
 # Trouver les amas de pixels noir
 def identificationAmas(image):
@@ -77,37 +76,44 @@ def identificationAmas(image):
             contoursAmas.append(contour)
     return contoursAmas
 
-dominant = couleurDominante(imageBase)
-# Afficher la couleur de fond
-print('La couleur du fond est :', dominant)
 
-# Récupérer la liste des pixels de couleur de fond
-liste = listePixelDominants(imageBase, dominant, 25)
-print('Nombre de pixels de couleur de fond :', len(liste))
+if __name__ == '__main__':
+    # Open image.jpeg
+    imageBase = cv2.imread('image.jpeg')
+    imageGray = cv2.cvtColor(imageBase, cv2.COLOR_BGR2GRAY)
+    # Flou gaussien pour lisser l'image
+    imageBase = cv2.GaussianBlur(imageBase, (5, 5), 0)
+    dominant = couleurDominante(imageBase)
+    # Afficher la couleur de fond
+    print('La couleur du fond est :', dominant)
 
-# Remplacer la couleur de fond par du blanc
-image = remplacerCouleur(imageBase, liste)
+    # Récupérer la liste des pixels de couleur de fond
+    liste = listePixelDominants(imageBase, dominant, 25)
+    print('Nombre de pixels de couleur de fond :', len(liste))
 
-# image to CV_8UC1
-imageAma = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-contourAmas = identificationAmas(imageAma)
-print('Nombre d\'amas de pixels noirs :', len(contourAmas))
+    # Remplacer la couleur de fond par du blanc
+    image = remplacerCouleur(imageBase, liste)
 
-# Afficher les amas de pixels noirs
-cv2.drawContours(image, contourAmas, -1, (0, 255, 0), 3)
+    # image to CV_8UC1
+    imageAma = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    contourAmas = identificationAmas(imageAma)
+    print('Nombre d\'amas de pixels noirs :', len(contourAmas))
 
-# Créer la fenêtre d'affichage de l'image en premier plan
-cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+    # Afficher les amas de pixels noirs
+    cv2.drawContours(image, contourAmas, -1, (0, 255, 0), 3)
 
+    # Créer la fenêtre d'affichage de l'image en premier plan
+    cv2.namedWindow('image', cv2.WINDOW_NORMAL)
 
-# Afficher l'image
-cv2.imshow('image', image)
+    # Afficher l'image
+    cv2.imshow('image', image)
 
-# Boucle infinie pour afficher l'image
-while True:
-    key = cv2.waitKey(30) & 0x0FF
-    if key == 27 or key == ord('q'):
-        print('arrêt du programme par l\'utilisateur')
-        break
+    # Boucle infinie pour afficher l'image
+    while True:
+        key = cv2.waitKey(30) & 0x0FF
+        if key == 27 or key == ord('q'):
+            print('arrêt du programme par l\'utilisateur')
+            break
 
-cv2.destroyWindow('image')
+    cv2.destroyWindow('image')
+    print('Fin du programme')
