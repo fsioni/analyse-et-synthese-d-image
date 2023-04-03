@@ -43,6 +43,6 @@ add_executable(synthese
         include/customs/drawables/Sphere.h
         src/customs/drawables/Plan.cpp
         include/customs/drawables/Plan.h
-        )
+        include/customs/drawables/Panel.h src/customs/drawables/Panel.cpp src/customs/drawables/Panel.cpp include/customs/drawables/Panel.h src/customs/rendering/LightPanel.cpp include/customs/rendering/LightPanel.h)
 
 add_subdirectory(lib/Google_tests)

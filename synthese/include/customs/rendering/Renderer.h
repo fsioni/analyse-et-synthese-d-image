@@ -2,6 +2,7 @@
 #include "Line.h"
 #include "../../gkit/image.h"
 #include "Light.h"
+#include "LightPanel.h"
 
 #ifndef GKIT3_RENDERER_H
 #define GKIT3_RENDERER_H
@@ -28,7 +29,11 @@ public:
 
     void addLight(const Light &light);
 
+    void addLight(const LightPanel &lightPanel);
+
     void render();
+
+    void processPixel(int i, int j);
 
 private:
     const float INF = std::numeric_limits<float>::infinity();
@@ -40,11 +45,13 @@ private:
 
     Hit calculateClosestHit(const Line &ray);
 
-    void processPixel(int i, int j);
-
     bool isInShadow(const Point &origin, const Point &destination, Vector normal);
 
     static Vector reflect(const Vector &n, const Vector &v);
+
+    void parallelRender();
+
+    void resizeImage();
 };
 
 

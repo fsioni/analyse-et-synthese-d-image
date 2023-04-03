@@ -1,6 +1,7 @@
 #include "customs/rendering/Renderer.h"
 #include "gkit/image_io.h"
 #include "customs/Utils.h"
+#include <thread>
 
 Renderer::Renderer(int width, int height, const std::string &filename, int antialiasingAmount) {
     Point DEFAULT_CAMERA_POSITION = Origin();
@@ -40,13 +41,55 @@ void Renderer::addDrawable(Drawable *drawable) {
     drawables.push_back(drawable);
 }
 
-void Renderer::render() {
-    for (int i = 0; i < image.width(); i++) {
-        for (int j = 0; j < image.height(); j++) {
-            processPixel(i, j);
+// Divise l'image en parties égales pour le traitement parallèle
+std::vector<std::pair<int, int>> divideImage(int width, int numParts) {
+    std::vector<std::pair<int, int>> parts(numParts);
+    int partSize = width / numParts;
+    int remainder = width % numParts;
+    int start = 0;
+    for (int i = 0; i < numParts; i++) {
+        int end = start + partSize;
+        if (i < remainder) end++;
+        parts[i] = {start, end};
+        start = end;
+    }
+    return parts;
+}
+
+// Fonction pour traiter une partie de l'image
+void processPart(Renderer* renderer, int start, int end) {
+    for (int i = start; i < end; i++) {
+        for (int j = 0; j < renderer->image.height(); j++) {
+            renderer->processPixel(i, j);
         }
     }
+}
 
+// Parallélise le rendu de l'image
+void Renderer::parallelRender() {
+    // Nombre de threads à utiliser
+    int numThreads = std::thread::hardware_concurrency();
+
+    // Diviser l'image en parties égales
+    auto parts = divideImage(image.width(), numThreads);
+
+    // Vecteur pour stocker les threads
+    std::vector<std::thread> threads(numThreads);
+
+    // Lancer les threads pour traiter chaque partie de l'image
+    for (int i = 0; i < numThreads; i++) {
+        auto [start, end] = parts[i];
+        threads[i] = std::thread(processPart, this, start, end);
+    }
+
+    // Attendre la fin de tous les threads
+    for (auto& thread : threads) {
+        thread.join();
+    }
+}
+
+// Redimensionne l'image avec un script Python
+void Renderer::resizeImage() {
     std::string path = this->filename + "-before_resize.png";
     write_image(image, path.c_str());
 
@@ -54,7 +97,13 @@ void Renderer::render() {
     std::string command = "cd ../resize_script && python3 main.py " + path + " " +
                           std::to_string(this->antialiasingAmount);
     system(command.c_str());
+}
 
+// Fonction principale de rendu de l'image
+void Renderer::render() {
+    std::cout << "Rendering the image...\n";
+    parallelRender();
+    resizeImage();
     std::cout << "================ RENDER ================\n\n"
               << "rendered successfuly at " << this->filename << "\n\n";
 }
@@ -76,6 +125,12 @@ void Renderer::processPixel(int i, int j) {
 
 void Renderer::addLight(const Light &light) {
     lights.push_back(light);
+}
+
+void Renderer::addLight(const LightPanel &lightPanel) {
+    for (auto &light: lightPanel.lights) {
+        addLight(light);
+    }
 }
 
 Color Renderer::calculatePixelColor(const Hit &hit, Point intersectionPoint) {
