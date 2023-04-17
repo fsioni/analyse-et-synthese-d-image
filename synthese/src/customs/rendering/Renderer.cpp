@@ -68,7 +68,7 @@ void processPart(Renderer* renderer, int start, int end) {
 // Parallélise le rendu de l'image
 void Renderer::parallelRender() {
     // Nombre de threads à utiliser
-    int numThreads = std::thread::hardware_concurrency();
+    int numThreads = (int) std::thread::hardware_concurrency();
 
     // Diviser l'image en parties égales
     auto parts = divideImage(image.width(), numThreads);
