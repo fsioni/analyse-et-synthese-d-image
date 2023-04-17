@@ -8,8 +8,6 @@
 class Drawable {
 public:
     Color color;
-    bool isMirror;
-    float refraction;
 
     virtual ~Drawable() = default;
 
