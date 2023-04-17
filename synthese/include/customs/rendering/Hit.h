@@ -11,7 +11,7 @@ public:
     Vector normal;
     Color color;
 
-    Hit(float position, Vector normal, Color color) : position(position),
+    Hit(float position, Vector normal = Vector(0,0,0), Color color = Blue()) : position(position),
                                                       normal(normal), color(color) {}
 
     explicit operator bool() const;

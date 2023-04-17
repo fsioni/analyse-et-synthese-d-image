@@ -16,11 +16,11 @@ public:
 
     Panel(Point position, Vector normal, float width, float height, Color color = Black());
 
-    ~Panel();
+    ~Panel() override;
 
-    Hit intersect(Line line);
+    Hit intersect(Line line) override;
 
-    Vector intersectNormal(Line line) const;
+    Vector intersectNormal(Line line) const override;
 };
 
 

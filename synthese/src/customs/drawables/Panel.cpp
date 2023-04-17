@@ -22,7 +22,7 @@ Panel::~Panel() = default;
 Hit Panel::intersect(Line line) {
     float t = dot(this->normal, Vector(line.position, this->position)) / dot(this->normal, line.direction);
 
-    if (t < 0) return {Utils::INF, this->normal, this->color};
+    if (t < 0) return {Utils::INF};
 
     Point p = line.position + t * line.direction;
 
@@ -33,6 +33,8 @@ Hit Panel::intersect(Line line) {
         p.y > this->position.y - halfHeight && p.y < this->position.y + halfHeight) {
         return {t, this->normal, this->color};
     }
+
+    return {Utils::INF};
 }
 
 Vector Panel::intersectNormal(Line line) const {
