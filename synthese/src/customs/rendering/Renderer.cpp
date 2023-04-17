@@ -89,7 +89,7 @@ void Renderer::parallelRender() {
 }
 
 // Redimensionne l'image avec un script Python
-void Renderer::resizeImage() {
+void Renderer::resizeImage() const {
     std::string path = this->filename + "-before_resize.png";
     write_image(image, path.c_str());
 
