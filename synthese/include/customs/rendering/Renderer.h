@@ -51,7 +51,7 @@ private:
 
     void parallelRender();
 
-    void resizeImage();
+    void resizeImage() const;
 };
 
 
