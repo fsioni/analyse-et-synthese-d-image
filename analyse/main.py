@@ -294,7 +294,7 @@ if __name__ == '__main__':
     # start time
     start = time.time()
     # Open image.jpeg
-    image = cv2.imread('image.jpeg')
+    image = cv2.imread('aResoudre2.jpeg')
     imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     imageBase = cv2.GaussianBlur(image, (5, 5), 0) # blur pour réduire le bruit
     cv2.imwrite('image_gris.png', imageGray)
@@ -309,7 +309,7 @@ if __name__ == '__main__':
     imageNoirSurBlanc = remplacer_couleur(imageBase, liste, 10)
 
     # enregistrer l'image noir sur blanc
-    cv2.imwrite('image_noir_sur_blanc.png', imageNoirSurBlanc)
+    cv2.imwrite('image_NBNett.png', imageNoirSurBlanc)
 
     # image to CV_8UC1
     imageContours = cv2.cvtColor(imageNoirSurBlanc, cv2.COLOR_BGR2GRAY)
@@ -346,7 +346,7 @@ if __name__ == '__main__':
             imagePiece = piece_info(contourAmas, i, image)
             cv2.imwrite('pieces/image_piece_' + str(i) + '.png', imagePiece)
         endTime(start)
-        cv2.imwrite('image_final.png', image)
+        cv2.imwrite('image_global.png', image)
 
     # On ferme la fenêtre
     cv2.destroyAllWindows()
@@ -501,7 +501,7 @@ if __name__ == '__main__':
                 posX += pieceWidth
             print()
             posY += pieceHeight
-        cv2.imwrite("resultat.png", imageRecomposer)
+        cv2.imwrite("image_resolue.png", imageRecomposer)
     else:
         print("Pas de solution trouvée")
 
