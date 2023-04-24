@@ -52,3 +52,8 @@ Sol bleu (plan), panneau jaune en collision avec une sphère rouge,  une lumièr
 Sol rouge (plan), sphère jaune,  une lumière ponctuelle blanche.
 
 <img height=256 src="render_example2.jpg" alt="Render example 2"></a>
+
+## ✍️ Authors
+
+- [Julien Ballouard](https://forge.univ-lyon1.fr/p2006861) : p2006861
+- [Farès SIONI](https://forge.univ-lyon1.fr/p1907037) : p1907037
