@@ -8,4 +8,4 @@ cmake_install.cmake
 Makefile
 synthese
 *.png
-*.jpg
+/images/*.jpg
