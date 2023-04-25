@@ -130,6 +130,7 @@ def identification_amas(_image):
     if (debug): print('Amas de pixels noirs identifiés : ', len(contours_amas))
     # Simplifier les contours
     contours_amas = [cv2.approxPolyDP(contour, 0.01 * cv2.arcLength(contour, True), True) for contour in contours_amas]
+    # Trier les contours
     contours_amas = trier_amas(contours_amas)
     return contours_amas
 
@@ -159,7 +160,7 @@ def numeroter_amas(_image, _contours):
     return _image
 
 class Piece:
-    def __init__(self, x, y, w, h, top, bottom, left, right, index):
+    def __init__(self, x, y, w, h, top, bottom, left, right, index, contour):
         self.x = x
         self.y = y
         self.w = w
@@ -167,6 +168,7 @@ class Piece:
         self.sides = [top, bottom, left, right]
         self.index = index
         self.used = False
+        self.contour = contour
 
 piecesTab = []
 
@@ -177,7 +179,7 @@ def piece_info(_contours, _index, image):
 
     # On récupère les coordonnées du contour
     x, y, w, h = cv2.boundingRect(_contours[_index])
-    piece = Piece(x, y, w, h, False, False, False, False, _index)
+    piece = Piece(x, y, w, h, False, False, False, False, _index, _contours[_index])
     # On affiche le contour
     image = cv2.drawContours(image, _contours, _index, (0, 255, 0), 2)
 
@@ -277,6 +279,134 @@ def endTime(start):
     # total time taken
     print(f"Analyse terminée en {elapsed} secondes")
 
+# Détermine si la pièce est valide pour la position donnée
+def isOkay(_piece, _index, _col, _row):
+    valide = True
+    # Si sur la première ligne il faut que la pièce ait un bord en haut
+    if (_index < _col):
+        if (_piece.sides[0] != "Bord"):
+            valide = False
+
+    # Si sur la première colonne il faut que la pièce ait un bord à gauche
+    if (_index % _col == 0):
+        if (_piece.sides[2] != "Bord"):
+            valide = False
+
+    # Si sur la dernière ligne il faut que la pièce ait un bord en bas
+    if (_index >= _col * (_row - 1)):
+        if (_piece.sides[1] != "Bord"):
+            valide = False
+
+    # Si sur la dernière colonne il faut que la pièce ait un bord à droite
+    if (_index % _col == _col - 1):
+        if (_piece.sides[3] != "Bord"):
+            valide = False
+
+    return valide
+
+# Récupère les voisins de la pièce
+def getVoisins(_solution, _col, _row, _index):
+    # On récupère les voisins
+    voisins = [None, None, None, None]
+    solutionLen = len(_solution)
+    # On récupère le voisin du dessus
+    if (_index >= _col and _index - _col < solutionLen):
+        voisins[0] = _solution[_index - _col]
+    # On récupère le voisin du dessous
+    if (_index < _col * (_row - 1) and _index + _col < solutionLen):
+        voisins[1] = _solution[_index + _col]
+    # On récupère le voisin de gauche
+    if (_index % _col != 0 and _index - 1 < solutionLen):
+        voisins[2] = _solution[_index - 1]
+    # On récupère le voisin de droite
+    if (_index % _col != _col - 1 and _index + 1 < solutionLen):
+        voisins[3] = _solution[_index + 1]
+
+    return voisins
+
+debug = ""
+
+# Détermine si les deux côtés peuvent être emboités
+def isMatching(side1, side2):
+    global debug
+    # Si un des deux côtés est un bord on ne peut pas les emboiter
+    if (side1 == "Bord" or side2 == "Bord"):
+        debug += "Bord\n"
+        return False
+    # Si les deux côtés sont identiques on ne peut pas les emboiter
+    if (side1 == side2):
+        debug += "Identique\n"
+        return False
+    # Si les deux côtés sont inversés on peut les emboiter
+    return True
+
+# Récupère l'index de l'autre côté
+def oposedSide(_side):
+    if (_side == 0):
+        return 1
+    elif (_side == 1):
+        return 0
+    elif (_side == 2):
+        return 3
+    elif (_side == 3):
+        return 2
+    return -1
+
+# Résoudre un puzzle de façon récursive de taille _col x _row
+def recursive_puzzle_solver(_piecesTab, _solution, _col, _row):
+    global debug
+    if (len(_solution) == _col * _row):
+        return _solution
+    # On récupère l'index de la pièce à trouver
+    index = len(_solution)
+    # on essaye de trouver une pièce qui correspond
+    for i in range(0, len(_piecesTab)):
+        debug += "Piece " + str(i) + " / " + str(len(_piecesTab)) + " pour la position " + str(index) + " / " + str(_col * _row) + "\n"
+
+        # On regarde si la pièce est déjà dans la solution
+        if (_piecesTab[i] in _solution):
+            debug += "Déjà dans la solution - Nop\n"
+            continue
+        debug += "Pas déjà dans la solution - Ok\n"
+        # On regarde si la pièces est valide pour la position
+        if (not isOkay(_piecesTab[i], index, _col, _row)):
+            debug += "Pas valide pour la position - Nop\n"
+            continue
+        debug += "Valide pour la position - Ok\n"
+        # On récupère les pièces voisines
+        voisins = getVoisins(_solution, _col, _row, index)
+        # On regarde si les pièces voisines correspondent
+        valide = True
+        for j in range(0, len(voisins)):
+            debug += "Voisin " + str(j) + " / " + str(len(voisins)) + " "
+            if (voisins[j] == None):
+                debug += "Pas de voisin - Ok\n"
+                continue
+            if (not isMatching(_piecesTab[i].sides[j], voisins[j].sides[oposedSide(j)])):
+                debug += "Pas valide pour les voisins - Nop at side "+str(j)+" (" + _piecesTab[i].sides[j] + ",  " + voisins[j].sides[oposedSide(j)] + ")\n"
+                valide = False
+                break
+
+        # Si la pièce est valide on l'ajoute à la solution
+        if (not valide):
+            debug += "Pas valide pour les voisins - Nop\n"
+            continue
+
+        debug += "Valide pour les voisins - Ok\n"
+        _solution.append(_piecesTab[i])
+        # On essaye de résoudre le puzzle
+        solution = recursive_puzzle_solver(_piecesTab, _solution, _col, _row)
+        # Si on a trouvé une solution on la retourne
+        if (solution != None):
+            return solution
+        # Sinon on retire la pièce de la solution
+        _solution.pop()
+
+
+    # Si on a pas trouvé de solution on retourne None
+    return None
+
+
 if __name__ == '__main__':
     # # On récupère le premier argument pour savoir si on affiche les détails ou pas
     # debug = len(sys.argv) > 1 and sys.argv[1] == "debug"
@@ -294,7 +424,7 @@ if __name__ == '__main__':
     # start time
     start = time.time()
     # Open image.jpeg
-    image = cv2.imread('aResoudre2.jpeg')
+    image = cv2.imread('aResoudre.jpeg')
     imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     imageBase = cv2.GaussianBlur(image, (5, 5), 0) # blur pour réduire le bruit
     cv2.imwrite('image_gris.png', imageGray)
@@ -351,129 +481,6 @@ if __name__ == '__main__':
     # On ferme la fenêtre
     cv2.destroyAllWindows()
 
-    def isOkay(_piece, _index, _col, _row):
-        valide = True
-        # Si sur la première ligne il faut que la pièce ait un bord en haut
-        if (_index < _col):
-            if (_piece.sides[0] != "Bord"):
-                valide = False
-
-        # Si sur la première colonne il faut que la pièce ait un bord à gauche
-        if (_index % _col == 0):
-            if (_piece.sides[2] != "Bord"):
-                valide = False
-
-        # Si sur la dernière ligne il faut que la pièce ait un bord en bas
-        if (_index >= _col * (_row - 1)):
-            if (_piece.sides[1] != "Bord"):
-                valide = False
-
-        # Si sur la dernière colonne il faut que la pièce ait un bord à droite
-        if (_index % _col == _col - 1):
-            if (_piece.sides[3] != "Bord"):
-                valide = False
-
-        return valide
-
-    def getVoisins(_solution, _col, _row, _index):
-        # On récupère les voisins
-        voisins = [None, None, None, None]
-        solutionLen = len(_solution)
-        # On récupère le voisin du dessus
-        if (_index >= _col and _index - _col < solutionLen):
-            voisins[0] = _solution[_index - _col]
-        # On récupère le voisin du dessous
-        if (_index < _col * (_row - 1) and _index + _col < solutionLen):
-            voisins[1] = _solution[_index + _col]
-        # On récupère le voisin de gauche
-        if (_index % _col != 0 and _index - 1 < solutionLen):
-            voisins[2] = _solution[_index - 1]
-        # On récupère le voisin de droite
-        if (_index % _col != _col - 1 and _index + 1 < solutionLen):
-            voisins[3] = _solution[_index + 1]
-
-        return voisins
-
-    debug = ""
-
-    def isMatching(side1, side2):
-        global debug
-        # Si un des deux côtés est un bord on ne peut pas les emboiter
-        if (side1 == "Bord" or side2 == "Bord"):
-            debug += "Bord\n"
-            return False
-        # Si les deux côtés sont identiques on ne peut pas les emboiter
-        if (side1 == side2):
-            debug += "Identique\n"
-            return False
-        # Si les deux côtés sont inversés on peut les emboiter
-        return True
-
-    def oposedSide(_side):
-        if (_side == 0):
-            return 1
-        elif (_side == 1):
-            return 0
-        elif (_side == 2):
-            return 3
-        elif (_side == 3):
-            return 2
-        return -1
-
-    # Résoudre un puzzle de façon récursive de taille _col x _row
-    def recursive_puzzle_solver(_piecesTab, _solution, _col, _row):
-        global debug
-        if (len(_solution) == _col * _row):
-            return _solution
-        # On récupère l'index de la pièce à trouver
-        index = len(_solution)
-        # on essaye de trouver une pièce qui correspond
-        for i in range(0, len(_piecesTab)):
-            debug += "Piece " + str(i) + " / " + str(len(_piecesTab)) + " pour la position " + str(index) + " / " + str(_col * _row) + "\n"
-
-            # On regarde si la pièce est déjà dans la solution
-            if (_piecesTab[i] in _solution):
-                debug += "Déjà dans la solution - Nop\n"
-                continue
-            debug += "Pas déjà dans la solution - Ok\n"
-            # On regarde si la pièces est valide pour la position
-            if (not isOkay(_piecesTab[i], index, _col, _row)):
-                debug += "Pas valide pour la position - Nop\n"
-                continue
-            debug += "Valide pour la position - Ok\n"
-            # On récupère les pièces voisines
-            voisins = getVoisins(_solution, _col, _row, index)
-            # On regarde si les pièces voisines correspondent
-            valide = True
-            for j in range(0, len(voisins)):
-                debug += "Voisin " + str(j) + " / " + str(len(voisins)) + " "
-                if (voisins[j] == None):
-                    debug += "Pas de voisin - Ok\n"
-                    continue
-                if (not isMatching(_piecesTab[i].sides[j], voisins[j].sides[oposedSide(j)])):
-                    debug += "Pas valide pour les voisins - Nop at side "+str(j)+" (" + _piecesTab[i].sides[j] + ",  " + voisins[j].sides[oposedSide(j)] + ")\n"
-                    valide = False
-                    break
-
-            # Si la pièce est valide on l'ajoute à la solution
-            if (not valide):
-                debug += "Pas valide pour les voisins - Nop\n"
-                continue
-
-            debug += "Valide pour les voisins - Ok\n"
-            _solution.append(_piecesTab[i])
-            # On essaye de résoudre le puzzle
-            solution = recursive_puzzle_solver(_piecesTab, _solution, _col, _row)
-            # Si on a trouvé une solution on la retourne
-            if (solution != None):
-                return solution
-            # Sinon on retire la pièce de la solution
-            _solution.pop()
-
-
-        # Si on a pas trouvé de solution on retourne None
-        return None
-
     # On essaye de résoudre le puzzle
     Col = 7
     Row = 4
@@ -496,7 +503,16 @@ if __name__ == '__main__':
                 posXcenter = posX + (pieceWidth - piece.w) // 2
                 posYcenter = posY + (pieceHeight - piece.h) // 2
                 print(solution[y * Col + x].sides, end=" ")
-                imagePiece = image[piece.y:piece.y + piece.h, piece.x:piece.x + piece.w]
+                # imagePiece = image[piece.y:piece.y + piece.h, piece.x:piece.x + piece.w]
+                # On veut récupèrer les pixels qui sont dans les contours
+                imagePiece = np.zeros((piece.h, piece.w, 3), np.uint8)
+                for i in range(0, piece.h):
+                    for j in range(0, piece.w):
+                        # Si le pixel est dans le contour
+                        inContour = cv2.pointPolygonTest(piece.contour, (piece.x + j, piece.y + i), False)
+                        if (inContour >= 0 ):
+                            imagePiece[i, j] = imageBase[piece.y + i, piece.x + j]
+
                 imageRecomposer[posYcenter:posYcenter + piece.h, posXcenter:posXcenter + piece.w] = imagePiece
                 posX += pieceWidth
             print()
