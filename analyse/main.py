@@ -6,7 +6,7 @@ import os
 
 debug = False
 piece = -1
-
+imageSrc = 'puzzle.jpeg'
 # Récupérer la couleur dominante dans une image
 def couleur_dominante(_image):
     if (debug): print('Récupération de la couleur dominante...')
@@ -64,7 +64,7 @@ def remplacer_couleur(_image, _liste, border=False):
         _image[0:_image.shape[0], _image.shape[1] - x:_image.shape[1]] = [255, 255, 255]
 
     if (debug): print('Image créée')
-    cv2.imwrite('image_NB.png', _image)
+    cv2.imwrite('puzzle_NB.png', _image)
 
 
     # On supprime les petits amas de pixels noirs
@@ -324,18 +324,18 @@ def getVoisins(_solution, _col, _row, _index):
 
     return voisins
 
-debug = ""
+debugTxt = ""
 
 # Détermine si les deux côtés peuvent être emboités
 def isMatching(side1, side2):
-    global debug
+    global debugTxt
     # Si un des deux côtés est un bord on ne peut pas les emboiter
     if (side1 == "Bord" or side2 == "Bord"):
-        debug += "Bord\n"
+        debugTxt += "Bord\n"
         return False
     # Si les deux côtés sont identiques on ne peut pas les emboiter
     if (side1 == side2):
-        debug += "Identique\n"
+        debugTxt += "Identique\n"
         return False
     # Si les deux côtés sont inversés on peut les emboiter
     return True
@@ -354,45 +354,45 @@ def oposedSide(_side):
 
 # Résoudre un puzzle de façon récursive de taille _col x _row
 def recursive_puzzle_solver(_piecesTab, _solution, _col, _row):
-    global debug
+    global debugTxt
     if (len(_solution) == _col * _row):
         return _solution
     # On récupère l'index de la pièce à trouver
     index = len(_solution)
     # on essaye de trouver une pièce qui correspond
     for i in range(0, len(_piecesTab)):
-        debug += "Piece " + str(i) + " / " + str(len(_piecesTab)) + " pour la position " + str(index) + " / " + str(_col * _row) + "\n"
+        debugTxt += "Piece " + str(i) + " / " + str(len(_piecesTab)) + " pour la position " + str(index) + " / " + str(_col * _row) + "\n"
 
         # On regarde si la pièce est déjà dans la solution
         if (_piecesTab[i] in _solution):
-            debug += "Déjà dans la solution - Nop\n"
+            debugTxt += "Déjà dans la solution - Nop\n"
             continue
-        debug += "Pas déjà dans la solution - Ok\n"
+        debugTxt += "Pas déjà dans la solution - Ok\n"
         # On regarde si la pièces est valide pour la position
         if (not isOkay(_piecesTab[i], index, _col, _row)):
-            debug += "Pas valide pour la position - Nop\n"
+            debugTxt += "Pas valide pour la position - Nop\n"
             continue
-        debug += "Valide pour la position - Ok\n"
+        debugTxt += "Valide pour la position - Ok\n"
         # On récupère les pièces voisines
         voisins = getVoisins(_solution, _col, _row, index)
         # On regarde si les pièces voisines correspondent
         valide = True
         for j in range(0, len(voisins)):
-            debug += "Voisin " + str(j) + " / " + str(len(voisins)) + " "
+            debugTxt += "Voisin " + str(j) + " / " + str(len(voisins)) + " "
             if (voisins[j] == None):
-                debug += "Pas de voisin - Ok\n"
+                debugTxt += "Pas de voisin - Ok\n"
                 continue
             if (not isMatching(_piecesTab[i].sides[j], voisins[j].sides[oposedSide(j)])):
-                debug += "Pas valide pour les voisins - Nop at side "+str(j)+" (" + _piecesTab[i].sides[j] + ",  " + voisins[j].sides[oposedSide(j)] + ")\n"
+                debugTxt += "Pas valide pour les voisins - Nop at side "+str(j)+" (" + _piecesTab[i].sides[j] + ",  " + voisins[j].sides[oposedSide(j)] + ")\n"
                 valide = False
                 break
 
         # Si la pièce est valide on l'ajoute à la solution
         if (not valide):
-            debug += "Pas valide pour les voisins - Nop\n"
+            debugTxt += "Pas valide pour les voisins - Nop\n"
             continue
 
-        debug += "Valide pour les voisins - Ok\n"
+        debugTxt += "Valide pour les voisins - Ok\n"
         _solution.append(_piecesTab[i])
         # On essaye de résoudre le puzzle
         solution = recursive_puzzle_solver(_piecesTab, _solution, _col, _row)
@@ -419,15 +419,21 @@ if __name__ == '__main__':
         # Si un nombre on définit la pièce à analyser
         elif arg.isdigit():
             piece = int(arg)
+        # Si un lien de fichier on définit le fichier à analyser . jpeg ou .png
+        elif arg.endswith(".jpeg") or arg.endswith(".png"):
+            # On regarde si le fichier existe
+            if (os.path.isfile(arg)):
+                imageSrc = arg
+
 
     print("Début de l'analyse...")
     # start time
     start = time.time()
     # Open image.jpeg
-    image = cv2.imread('aResoudre.jpeg')
+    image = cv2.imread(imageSrc)
     imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     imageBase = cv2.GaussianBlur(image, (5, 5), 0) # blur pour réduire le bruit
-    cv2.imwrite('image_gris.png', imageGray)
+    cv2.imwrite('puzzle_gris.png', imageGray)
     # Couleur dominante
     dominant = couleur_dominante(imageBase)
     # Afficher la couleur de fond
@@ -439,7 +445,7 @@ if __name__ == '__main__':
     imageNoirSurBlanc = remplacer_couleur(imageBase, liste, 10)
 
     # enregistrer l'image noir sur blanc
-    cv2.imwrite('image_NBNett.png', imageNoirSurBlanc)
+    cv2.imwrite('puzzle_NBNett.png', imageNoirSurBlanc)
 
     # image to CV_8UC1
     imageContours = cv2.cvtColor(imageNoirSurBlanc, cv2.COLOR_BGR2GRAY)
@@ -452,7 +458,7 @@ if __name__ == '__main__':
     imageContours = numeroter_amas(imageContours, contourAmas)
 
     # Enregistrer l'image avec les amas de pixels noirs
-    cv2.imwrite('image_contours.png', imageContours)
+    cv2.imwrite('puzzle_contours.png', imageContours)
 
     # On le fait pour toutes les pièces
     # Dabord on regarde si le dossier pieces existe, si non on le crée
@@ -467,16 +473,16 @@ if __name__ == '__main__':
     if (piece != -1 and piece < len(contourAmas)):
         imagePiece = piece_info(contourAmas, piece, image)
         endTime(start)
-        cv2.imwrite('pieces/image_piece_' + str(piece) + '.png', imagePiece)
+        cv2.imwrite('pieces/puzzle_piece_' + str(piece) + '.png', imagePiece)
         # On affiche l'image
         cv2.imshow('image', imagePiece)
         cv2.waitKey(0)
     else: # Sinon on analyse toutes les pièces
         for i in range(0, len(contourAmas)):
             imagePiece = piece_info(contourAmas, i, image)
-            cv2.imwrite('pieces/image_piece_' + str(i) + '.png', imagePiece)
+            cv2.imwrite('pieces/puzzle_piece_' + str(i) + '.png', imagePiece)
         endTime(start)
-        cv2.imwrite('image_global.png', image)
+        cv2.imwrite('puzzle_global.png', image)
 
     # On ferme la fenêtre
     cv2.destroyAllWindows()
@@ -517,13 +523,13 @@ if __name__ == '__main__':
                 posX += pieceWidth
             print()
             posY += pieceHeight
-        cv2.imwrite("image_resolue.png", imageRecomposer)
+        cv2.imwrite("puzzle_resolue.png", imageRecomposer)
     else:
         print("Pas de solution trouvée")
 
     # 2crire le résultat dans un fichier en le vidant avant
-    f = open("resultat.txt", "w")
-    f.write(debug)
+    f = open("solver_debug.txt", "w")
+    f.write(debugTxt)
     f.close()
 
 
