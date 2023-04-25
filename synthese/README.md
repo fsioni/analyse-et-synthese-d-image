@@ -40,15 +40,30 @@
   - Plan
   - Panneau
 - Ombres
-- Lissage de l'image en générant plusieurs rayons par pixel : on génère une image plus grande, puis on la réduit à l'aide d'un script Python avec OpenCV
+- Antialiasing : Lissage de l'image en générant plusieurs rayons par pixel : on génère une image plus grande, puis on la réduit à l'aide d'un script Python avec OpenCV
+
+## Improvements to be made
+- Les spots ne semblent pas se rotationner correctement
+- Reflets
+- Transparence
+
+## Difficulties and tries
+- Nous avons testé de faire des reflets, mais nous n'avons pas réussi à les faire fonctionner correctement, notamment à cause de la classe `Intersection` qui devait être modifiée pour prendre en compte les reflets.  
+- Nous avons aussi essayé de faire d'autres formes, comme un cube, à l'aide de plusieurs plans, mais le rendu n'était pas satisfaisant.
+
+## Wants
+- Nous aimerions voir comment bouger la caméra en temps réel, pour pouvoir naviguer dans la scène.
+- Nous aurions aimé voir comment faire des textures sur les objets, au-delà de la couleur.
+- Nous aurions aimé que le cours soit plus concret, avec des exemples de code, et plus de détails sur les algorithmes utilisés.
+- Nous aurions aimé que les TPs encouragent plus de code propre.
 
 ## Render examples
 ### Render 1
-Sol bleu (plan), panneau jaune en collision avec une sphère rouge,  une lumière spot blanche.
+Sol bleu (plan), panneau jaune en collision avec une sphère rouge, une lumière spot blanche.
 
-<img height=256 src="render_example1.jpg" alt="Render example 1"></a>
+![Render example 1](render_example1.jpg "Render example 1")</a>
 
 ### Render 2
 Sol rouge (plan), sphère jaune,  une lumière ponctuelle blanche.
 
-<img height=256 src="render_example2.jpg" alt="Render example 2"></a>
+![Render example 2](render_example2.jpg "Render example 2")</a>
