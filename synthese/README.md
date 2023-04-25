@@ -41,6 +41,7 @@
   - Panneau
 - Ombres
 - Antialiasing : Lissage de l'image en générant plusieurs rayons par pixel : on génère une image plus grande, puis on la réduit à l'aide d'un script Python avec OpenCV
+- Tests unitaires avec Google Test pour les classes `Sphere`, `Plane`
 
 ## Improvements to be made
 - Les spots ne semblent pas se rotationner correctement
